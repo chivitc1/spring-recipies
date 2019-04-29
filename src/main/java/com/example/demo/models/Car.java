@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Builder @NoArgsConstructor @AllArgsConstructor
 public class Car {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Nullable
     private long id;
     private String brand, model, color, registerNumber;

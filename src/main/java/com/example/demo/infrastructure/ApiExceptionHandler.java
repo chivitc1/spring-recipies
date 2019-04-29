@@ -1,5 +1,6 @@
 package com.example.demo.infrastructure;
 
+import com.example.demo.api.exceptions.InvalidJwtAuthenticationException;
 import com.example.demo.api.exceptions.MissingParamException;
 import com.example.demo.api.exceptions.ResourceNotFoundException;
 import com.example.demo.api.views.MissingParamError;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.HashMap;
 
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
@@ -30,5 +33,12 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = { MissingParamException.class })
     protected ResponseEntity<MissingParamError> handleMissingParam(MissingParamException ex, WebRequest request) {
         return new ResponseEntity<MissingParamError>(new MissingParamError(ex.getMessage(), ex.getFieldName()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = { InvalidJwtAuthenticationException.class })
+    protected ResponseEntity<Object> handleInvalidToken(InvalidJwtAuthenticationException ex, WebRequest request) {
+        HashMap<String, String> result = new HashMap();
+        result.put("error", ex.getMessage());
+        return new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
     }
 }
