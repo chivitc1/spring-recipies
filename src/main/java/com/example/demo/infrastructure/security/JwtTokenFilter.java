@@ -47,6 +47,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             if (jwtTokenProvider.validateToken(token)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                filterChain.doFilter(request, response);
             }
         } catch (InvalidJwtAuthenticationException ex) {
             HashMap<String, String> result = new HashMap();
@@ -55,7 +56,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getOutputStream().write(jsonBytes(result));
         }
-        filterChain.doFilter(request, response);
     }
 
     private byte[] jsonBytes(HashMap<String, String> result) throws IOException {
