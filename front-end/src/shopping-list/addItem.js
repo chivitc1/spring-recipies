@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+// import ReactDOM from 'react-dom';
 import SkyLight from 'react-skylight';
 import RaisedButton from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
 class AddItem extends Component {
-    constructor(props) {
-        super(props);
-    }
 
     addItem = () => {
         const item = {product: this.state.product, amount: this.state.amount};

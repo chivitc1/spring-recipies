@@ -8,10 +8,10 @@ import { CSVLink } from 'react-csv';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Snackbar from '@material-ui/core/Snackbar';
+import {API_URL} from './config';
+import { getToken } from './utils';
 
-const API_URL = `${process.env.REACT_APP_API_PROTOCOL}://${process.env.REACT_APP_API_HOST}:${process.env.REACT_APP_API_PORT}/api`;
 const CARS_API_URL = `${API_URL}/cars`;
-
 export class CarList extends Component {
     constructor(props) {
         super(props)
@@ -26,10 +26,10 @@ export class CarList extends Component {
     }
 
     fetchCars = () => {
-        fetch(CARS_API_URL)
+        fetch(`${API_URL}/cars`, { headers: {'Authorization': `Bearer ${getToken()}`}})
             .then(response => response.json())
             .then(responseData => {
-                this.setState({
+                responseData.length && this.setState({
                     cars: responseData
                 })
             })
@@ -37,10 +37,13 @@ export class CarList extends Component {
     }
 
     addCar = (car) => {
-        fetch(CARS_API_URL,
+        fetch(`${API_URL}/cars`,
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`,
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(car)
             })
             .then(res => this.fetchCars())
@@ -51,7 +54,10 @@ export class CarList extends Component {
         fetch(`${CARS_API_URL}/${id}`,
             {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`,
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(car)
 
             })
@@ -69,10 +75,21 @@ export class CarList extends Component {
 
     onDelClick = (id) => {
         fetch(`${CARS_API_URL}/${id}`,
-            { method: 'DELETE' })
+            { 
+                method: 'DELETE', 
+                headers: {'Authorization': `Bearer ${getToken()}`}
+            })
             .then(res => {
-                this.setState({open: true, message: "Car deleted" });
-                this.fetchCars();
+                let msg;
+                if (res.status === 200)  {
+                    msg ="Car deleted";
+                } else if (res.status === 403)  {
+                    msg = "You have no authorization to delete car";
+                 } else {
+                     msg = "Error occur while deleting car";
+                 }
+                this.setState({ open: true, message: msg });
+                this.fetchCars();                
             })
             .catch(err => {
                 this.setState({open: true, message: "Error when deleting"});

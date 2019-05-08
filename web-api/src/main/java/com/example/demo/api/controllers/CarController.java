@@ -7,6 +7,7 @@ import com.example.demo.api.views.CarView;
 import com.example.demo.api.views.OwnerView;
 import com.example.demo.services.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +51,6 @@ public class CarController {
     @DeleteMapping("/cars/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
         carService.remove(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(HttpEntity.EMPTY);
     }
 }
