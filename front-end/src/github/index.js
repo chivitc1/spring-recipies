@@ -26,12 +26,6 @@ class GithubRepoDemo extends React.Component {
     }
 
     render() {
-        const tableRows = this.state.data && this.state.data.map((item, index) => 
-            <tr key={index}>
-                <td>{item.full_name}</td>
-                <td><a href={item.html_url}>{item.html_url}</a></td>
-            </tr>
-        );
         const columns = [{
             Header: 'Name',         // Header of column
             accessor: 'full_name'   // Value accessor

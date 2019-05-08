@@ -6,7 +6,7 @@ import GithubRepoDemo from './github'
 import InfinityListDemo from './infinity-list';
 import ShoppingList from './shopping-list';
 import Home from './home';
-import CorsDemo from './corsapi';
+// import CorsDemo from './corsapi';
 import CarApp from './car-app';
 
 class App extends React.Component {

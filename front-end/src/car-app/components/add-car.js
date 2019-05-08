@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import SkyLight from 'react-skylight';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import './add-car.css';
 
 export default class AddCar extends Component {
     constructor(props) {
@@ -16,8 +19,8 @@ export default class AddCar extends Component {
     handleSubmit = (event) => {
         event.preventDefault();
         let newCar = {
-            brand: this.state.brand, 
-            model: this.state.model, 
+            brand: this.state.brand,
+            model: this.state.model,
             color: this.state.color,
             year: this.state.year,
             price: this.state.price
@@ -37,24 +40,28 @@ export default class AddCar extends Component {
                 <SkyLight hideOnOverlayClicked ref="addDialog">
                     <h3>New Car</h3>
                     <form>
-                        <input type="text" placeholder="Brand" name="brand"
+                        <TextField label="Brand" placeholder="Brand" name="brand"
                             onChange={this.handleChange} /><br />
-                        <input type="text" placeholder="Model" name="model"
+                        <TextField label="Model" placeholder="Model" name="model"
                             onChange={this.handleChange} /><br />
-                        <input type="text" placeholder="Color" name="color"
+                        <TextField label="Color" placeholder="Color" name="color"
                             onChange={this.handleChange} /><br />
-                        <input type="text" placeholder="Year" name="year"
+                        <TextField label="Year" placeholder="Year" name="year"
                             onChange={this.handleChange} /><br />
-                        <input type="text" placeholder="Price" name="price"
+                        <TextField label="Price" placeholder="Price" name="price"
                             onChange={this.handleChange} /><br />
-                        <button onClick={this.handleSubmit}>Save</button>{'  '}
-                        <button onClick={this.cancelSubmit}>Cancel</button><br />
+                        <div className="formButtons">
+                            <Button variant="outlined" color="primary"
+                                onClick={this.handleSubmit}>Save</Button>{'  '}
+                            <Button variant="outlined" color="secondary"
+                                onClick={this.cancelSubmit}>Cancel</Button>
+                        </div>
 
                     </form>
                 </SkyLight>
                 <div>
-                    <button style={{'margin': '10px'}}
-                        onClick={() => this.refs.addDialog.show()}>New Car</button>
+                    <Button variant="contained" color="primary" style={{ 'margin': '10px' }}
+                        onClick={() => this.refs.addDialog.show()}>New Car</Button>
                 </div>
             </div>
         )

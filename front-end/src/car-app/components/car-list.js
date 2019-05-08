@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'
 import AddCar from './add-car';
-import { CSVLink} from 'react-csv';
-
+import { CSVLink } from 'react-csv';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Snackbar from '@material-ui/core/Snackbar';
 
 const API_URL = `${process.env.REACT_APP_API_PROTOCOL}://${process.env.REACT_APP_API_HOST}:${process.env.REACT_APP_API_PORT}/api`;
 const CARS_API_URL = `${API_URL}/cars`;
@@ -17,7 +17,7 @@ export class CarList extends Component {
         super(props)
 
         this.state = {
-            cars: []
+            cars: [], open: false, message: ''
         };
     }
 
@@ -53,33 +53,29 @@ export class CarList extends Component {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(car)
-                
+
             })
-        .then(res => {
-            if (res.status != 200) {
-                throw new Error(res.json().error);
-            }   
-            this.fetchCars();
-            toast.success("Changed saved", {
-                position: toast.POSITION.BOTTOM_LEFT
-            });
-        })
-        .catch(err => {
-            toast.error("Error when saving", {
-                position: toast.POSITION.BOTTOM_LEFT
-            });
-        })
+            .then(res => {
+                if (res.status !== 200) {
+                    throw new Error(res.json().error);
+                }
+                this.fetchCars();
+                this.setState({open: true, message: "Changes saved"});
+            })
+            .catch(err => {
+                this.setState({open: true, message:"Error when saving" });
+            })
     }
 
     onDelClick = (id) => {
         fetch(`${CARS_API_URL}/${id}`,
             { method: 'DELETE' })
             .then(res => {
-                toast.success("Car deleted", { position: toast.POSITION.BOTTOM_LEFT });
+                this.setState({open: true, message: "Car deleted" });
                 this.fetchCars();
             })
             .catch(err => {
-                toast.error("Error when deleting", { position: toast.POSITION.BOTTOM_LEFT });
+                this.setState({open: true, message: "Error when deleting"});
                 console.log(err)
             });
     }
@@ -104,7 +100,7 @@ export class CarList extends Component {
                     e => {
                         const data = [...this.state.cars];
                         data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
-                        this.setState({cars: data});
+                        this.setState({ cars: data });
                     }
                 }
                 dangerouslySetInnerHTML={{
@@ -113,6 +109,11 @@ export class CarList extends Component {
             />
         )
     }
+
+    handleStatusBarClose = (event, reason) => {
+        this.setState({open: false});
+    }
+
     render() {
         const columns = [{
             Header: 'Brand',
@@ -140,7 +141,8 @@ export class CarList extends Component {
             filterable: false,
             width: 100,
             accessor: 'id',
-            Cell: ({ value, row }) => (<button onClick={() => { this.updateCar(row, value) }}>Save</button>
+            Cell: ({ value, row }) => (<Button size="small" variant="text" color="primary"
+                onClick={() => { this.updateCar(row, value) }}>Save</Button>
             )
         }, {
             id: 'delButton',
@@ -148,16 +150,31 @@ export class CarList extends Component {
             filterable: false,
             width: 100,
             accessor: 'id',
-            Cell: ({ value }) => (<button onClick={() => { this.confirmDelete(value) }}>Delete</button>
+            Cell: ({ value }) => (<Button size="small" variant="text" color="secondary"
+                onClick={() => { this.confirmDelete(value) }}>Delete</Button>
             )
         }]
 
         return (
             <div className="App">
-                <CSVLink data={this.state.cars} separator=";">Export CSV</CSVLink>
-                <AddCar addCar={this.addCar} fetchCars={this.fetchCars} />
+                <Grid container>
+                    <Grid item>
+                        <AddCar addCar={this.addCar} fetchCars={this.fetchCars} />
+                    </Grid>
+                    <Grid item style={{padding: 20}}>
+                        <CSVLink data={this.state.cars} separator=";">Export CSV</CSVLink>
+                    </Grid>
+                </Grid>
                 <ReactTable data={this.state.cars} columns={columns} filterable={true} />
-                <ToastContainer autoClose={6500} />
+                <Snackbar 
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                      }}
+                    style={{width: 300, color: 'green'}}
+                    open={this.state.open} 
+                    onClose={this.handleStatusBarClose}
+                    autoHideDuration={1500} message={this.state.message} />
             </div>
         );
     }
